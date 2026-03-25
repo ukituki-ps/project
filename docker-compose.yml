@@ -56,7 +56,8 @@ services:
     image: ghcr.io/sartography/spiffworkflow-backend:latest
     container_name: project-spiffworkflow
     environment:
-      DATABASE_URL: postgresql://${SPIFF_DB_USER:-spiff_user}:${SPIFF_DB_PASSWORD:-spiff_password}@spiffworkflow-db:5432/${SPIFF_DB_NAME:-spiff_db}
+      SPIFFWORKFLOW_BACKEND_DATABASE_URI: postgresql://${SPIFF_DB_USER:-spiff_user}:${SPIFF_DB_PASSWORD:-spiff_password}@spiffworkflow-db:5432/${SPIFF_DB_NAME:-spiff_db}
+      SPIFFWORKFLOW_BACKEND_DATABASE_TYPE: postgres
       SPIFF_BASE_URL: http://spiffworkflow:7000
       SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR: /app/process_models
       FLASK_SESSION_SECRET_KEY: ${FLASK_SESSION_SECRET_KEY:-super_secret_session_key}
@@ -139,7 +140,7 @@ services:
     image: nginx:1.27-alpine
     container_name: project-nginx
     ports:
-      - "80:80"
+      - "${NGINX_PORT:-8088}:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
