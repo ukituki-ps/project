@@ -155,6 +155,10 @@ set -a
 source .env
 set +a
 
+# Совместимость переменных для разных compose-конфигураций
+export STORE_ENCRYPTION_KEY="${STORE_ENCRYPTION_KEY:-${NOVU_STORE_ENCRYPTION_KEY:-change_me_novu_store_key_32_chars}}"
+export SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR="${SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR:-/app/process_models}"
+
 log "Загрузка образов..."
 dc pull --ignore-pull-failures
 

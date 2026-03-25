@@ -94,7 +94,8 @@ services:
       REDIS_HOST: novu-redis
       REDIS_PORT: 6379
       JWT_SECRET: ${NOVU_JWT_SECRET:-change_me_novu_jwt_secret}
-      STORE_ENCRYPTION_KEY: ${NOVU_STORE_ENCRYPTION_KEY:-change_me_novu_store_key_32_chars}
+      STORE_ENCRYPTION_KEY: ${STORE_ENCRYPTION_KEY:-change_me_novu_store_key_32_chars}
+      NOVU_STORE_ENCRYPTION_KEY: ${NOVU_STORE_ENCRYPTION_KEY:-change_me_novu_store_key_32_chars}
       NEW_RELIC_APP_NAME: ${NOVU_NEW_RELIC_APP_NAME:-project-novu}
       NEW_RELIC_ENABLED: ${NOVU_NEW_RELIC_ENABLED:-false}
     ports:
