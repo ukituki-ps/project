@@ -122,6 +122,7 @@ if ! dc version >/dev/null 2>&1; then
     exit 1
 fi
 
+
 # Настройка compose файла
 COMPOSE_FILE="docker-compose.yml"
 if [ -f "docker-compose.${ENVIRONMENT}.yml" ]; then
