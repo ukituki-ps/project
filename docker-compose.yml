@@ -59,6 +59,9 @@ services:
     environment:
       DATABASE_URL: postgresql://${SPIFF_DB_USER:-spiff_user}:${SPIFF_DB_PASSWORD:-spiff_password}@spiffworkflow-db:5432/${SPIFF_DB_NAME:-spiff_db}
       SPIFF_BASE_URL: http://spiffworkflow:7000
+      SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR: /app/process_models
+    volumes:
+      - ./spiff/bpmn:/app/process_models
     ports:
       - "7000:7000"
     depends_on:
@@ -91,6 +94,9 @@ services:
       REDIS_HOST: novu-redis
       REDIS_PORT: 6379
       JWT_SECRET: ${NOVU_JWT_SECRET:-change_me_novu_jwt_secret}
+      STORE_ENCRYPTION_KEY: ${NOVU_STORE_ENCRYPTION_KEY:-change_me_novu_store_key_32_chars}
+      NEW_RELIC_APP_NAME: ${NOVU_NEW_RELIC_APP_NAME:-project-novu}
+      NEW_RELIC_ENABLED: ${NOVU_NEW_RELIC_ENABLED:-false}
     ports:
       - "3000:3000"
     depends_on:
