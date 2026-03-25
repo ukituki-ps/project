@@ -11,9 +11,10 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
-RUN pip install --upgrade pip \
-    && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+COPY . .
+RUN mkdir -p /wheels \
+    && pip install --upgrade pip \
+    && if [ -f requirements.txt ]; then pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt; fi
 
 FROM python:3.12-slim AS runtime
 
@@ -26,11 +27,15 @@ WORKDIR /app
 RUN useradd --create-home --shell /bin/bash appuser
 
 COPY --from=builder /wheels /wheels
-COPY requirements.txt ./
-RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt \
-    && rm -rf /wheels
-
 COPY . .
+RUN if [ -f requirements.txt ]; then \
+        if [ "$(ls -A /wheels 2>/dev/null)" ]; then \
+            pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt; \
+        else \
+            pip install --no-cache-dir -r requirements.txt; \
+        fi; \
+    fi \
+    && rm -rf /wheels
 
 RUN chown -R appuser:appuser /app
 USER appuser
