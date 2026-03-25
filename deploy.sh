@@ -75,8 +75,27 @@ backup_database() {
 
 run_migrations() {
     log "Запускаю миграции Alembic..."
-    dc exec -T backend alembic upgrade head
-    log "Миграции выполнены"
+
+    # Проверяем, доступен ли alembic внутри контейнера
+    if ! dc exec -T backend sh -lc "command -v alembic >/dev/null 2>&1"; then
+        log "alembic не найден в контейнере backend. Пропускаю миграции."
+        return 0
+    fi
+
+    # Проверяем наличие конфигурационного файла alembic.ini в рабочем каталоге контейнера
+    if ! dc exec -T backend sh -lc "[ -f alembic.ini ] && echo OK || echo MISSING" | grep -q OK; then
+        log "Файл alembic.ini не найден в контейнере backend. Пропускаю миграции."
+        return 0
+    fi
+
+    # Пытаемся выполнить миграции, но не даём скрипту падать при ошибке миграции
+    if dc exec -T backend sh -lc "alembic upgrade head"; then
+        log "Миграции выполнены"
+        return 0
+    else
+        error "Не удалось выполнить миграции alembic внутри контейнера backend"
+        return 1
+    fi
 }
 
 check_health() {
