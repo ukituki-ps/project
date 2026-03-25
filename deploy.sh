@@ -98,6 +98,42 @@ run_migrations() {
     fi
 }
 
+run_spiff_init() {
+    log "Пробую инициализацию/миграции SpiffWorkflow..."
+
+    # Убедимся, что контейнер базы данных для Spiff готов
+    if ! check_health spiff-db; then
+        log "Сервис spiff-db не готов. Пропускаю инициализацию SpiffWorkflow."
+        return 0
+    fi
+
+    # Проверяем, существует ли контейнер spiffworkflow
+    if ! dc ps -q spiffworkflow >/dev/null 2>&1; then
+        log "Контейнер spiffworkflow не запущен. Пропускаю инициализацию."
+        return 0
+    fi
+
+    # Если внутри контейнера есть alembic и конфиг — пытаемся выполнить миграции
+    if dc exec -T spiffworkflow sh -lc "command -v alembic >/dev/null 2>&1" >/dev/null 2>&1; then
+        if dc exec -T spiffworkflow sh -lc "[ -f alembic.ini ] && echo OK || echo MISSING" | grep -q OK; then
+            log "alembic найден в spiffworkflow, запускаю миграции..."
+            if dc exec -T spiffworkflow sh -lc "alembic upgrade head"; then
+                log "SpiffWorkflow миграции выполнены"
+                return 0
+            else
+                error "Ошибка при выполнении миграций SpiffWorkflow внутри контейнера"
+                return 1
+            fi
+        else
+            log "alembic.ini не найден в контейнере spiffworkflow. Пропускаю миграции SpiffWorkflow."
+            return 0
+        fi
+    fi
+
+    log "alembic не обнаружен в контейнере spiffworkflow. Если Spiff требует ручной инициализации — выполните её вручную."
+    return 0
+}
+
 check_health() {
     local service="$1"
     local container_id
@@ -223,6 +259,8 @@ if [ "$SKIP_MIGRATIONS" = "0" ] && [ "$RUN_MIGRATIONS" = "1" ]; then
             backup_database
         fi
         run_migrations
+        # Попытка инициализировать/применить миграции для SpiffWorkflow (если требуется)
+        run_spiff_init
     else
         log "Alembic не найден. Пропускаем миграции."
     fi
