@@ -105,7 +105,7 @@ services:
       - novu-db
       - novu-redis
     restart: unless-stopped
-
+    
   backend:
     build:
       context: ./backend
