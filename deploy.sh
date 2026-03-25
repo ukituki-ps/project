@@ -102,8 +102,8 @@ run_spiff_init() {
     log "Пробую инициализацию/миграции SpiffWorkflow..."
 
     # Убедимся, что контейнер базы данных для Spiff готов
-    if ! check_health spiff-db; then
-        log "Сервис spiff-db не готов. Пропускаю инициализацию SpiffWorkflow."
+    if ! check_health spiffworkflow-db; then
+        log "Сервис spiffworkflow-db не готов. Пропускаю инициализацию SpiffWorkflow."
         return 0
     fi
 
