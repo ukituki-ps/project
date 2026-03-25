@@ -109,6 +109,12 @@ trap cleanup EXIT
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${PROJECT_DIR}"
 
+# Обновление файлов из репозитория
+log "Обновление из git..."
+git fetch --all
+git reset --hard origin/main
+log "Файлы обновлены"
+
 # Проверка зависимостей
 for cmd in docker; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
