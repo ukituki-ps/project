@@ -20,7 +20,6 @@ error() {
 dc() {
     docker compose "$@"
 }
-
 wait_for_db() {
     local service="postgres"
     local retries=30
