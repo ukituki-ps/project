@@ -12,6 +12,7 @@ SKIP_MIGRATIONS="${SKIP_MIGRATIONS:-0}"
 RUN_MIGRATIONS="${RUN_MIGRATIONS:-1}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-app}"
 
+
 # Логирование
 log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"
