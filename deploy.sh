@@ -125,7 +125,7 @@ fi
 # Настройка compose файла
 COMPOSE_FILE="docker-compose.yml"
 if [ -f "docker-compose.${ENVIRONMENT}.yml" ]; then
-    COMPOSE_FILE="docker-compose.${ENVIRONMENT}.yml"
+    COMPOSE_FILE="docker-compose.yml:docker-compose.${ENVIRONMENT}.yml"
 fi
 export COMPOSE_FILE
 export COMPOSE_PROJECT_NAME
