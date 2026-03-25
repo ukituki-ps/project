@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Отключаем буферизацию для всего скрипта
+export PYTHONUNBUFFERED=1
+export DOCKER_CLI_HINTS=false
+
+# Перенаправляем вывод с отключенной буферизацией
+exec stdbuf -oL -eL "$0" "$@"
+
 # Конфигурация
 ENVIRONMENT="${ENVIRONMENT:-production}"
 BACKUP_BEFORE_MIGRATIONS="${BACKUP_BEFORE_MIGRATIONS:-0}"

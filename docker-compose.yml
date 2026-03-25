@@ -59,6 +59,7 @@ services:
       DATABASE_URL: postgresql://${SPIFF_DB_USER:-spiff_user}:${SPIFF_DB_PASSWORD:-spiff_password}@spiffworkflow-db:5432/${SPIFF_DB_NAME:-spiff_db}
       SPIFF_BASE_URL: http://spiffworkflow:7000
       SPIFFWORKFLOW_BACKEND_BPMN_SPEC_ABSOLUTE_DIR: /app/process_models
+      FLASK_SESSION_SECRET_KEY: ${FLASK_SESSION_SECRET_KEY:-super_secret_session_key}
     volumes:
       - ./spiff/bpmn:/app/process_models
     ports:
@@ -119,7 +120,7 @@ services:
     ports:
       - "8000:8000"
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/health || exit 1"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
