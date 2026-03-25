@@ -6,8 +6,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-project_db}
       POSTGRES_USER: ${POSTGRES_USER:-project_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-project_password}
-    ports:
-      - "5432:5432"
+    # порт не проброшен на хост — доступ только внутри Docker-сети
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -105,7 +104,7 @@ services:
       - novu-db
       - novu-redis
     restart: unless-stopped
-    
+
   backend:
     build:
       context: ./backend
