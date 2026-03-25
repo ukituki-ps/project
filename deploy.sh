@@ -148,6 +148,18 @@ if [ ! -f ".env" ]; then
         error ".env файл не найден"
         exit 1
     fi
+else
+    # Дополняем .env недостающими переменными из .env.example
+    if [ -f ".env.example" ]; then
+        while IFS='=' read -r key value; do
+            key="$(echo "$key" | xargs)"
+            [[ -z "$key" || "$key" == \#* ]] && continue
+            if ! grep -q "^${key}=" .env 2>/dev/null; then
+                echo "${key}=${value}" >> .env
+                log "Добавлена недостающая переменная: ${key}"
+            fi
+        done < .env.example
+    fi
 fi
 
 # Загрузка переменных окружения
@@ -165,8 +177,11 @@ dc pull --ignore-pull-failures
 log "Сборка локальных образов..."
 dc build backend
 
+log "Остановка старых контейнеров..."
+dc down --remove-orphans --timeout 30 || true
+
 log "Запуск сервисов..."
-dc up -d --remove-orphans
+dc up -d --force-recreate --remove-orphans
 
 # Ожидание готовности сервисов
 wait_for_db
